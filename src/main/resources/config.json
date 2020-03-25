@@ -1,0 +1,5 @@
+{
+    "ValueToSearch": "thumbnailUrl",
+    "SubstringUrl": "score_",
+    "sequencerLength": 1
+}
