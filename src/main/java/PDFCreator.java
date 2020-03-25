@@ -110,7 +110,7 @@ public class PDFCreator {
                 deleteFile(fileName);
             }
         } else {
-            Collections.copy(pngFiles, downloadedFiles);
+            pngFiles.addAll(downloadedFiles);
         }
 
 
@@ -125,9 +125,7 @@ public class PDFCreator {
             }
             sourcePath = sourcePath.substring(1);
             // Source = D:/Source/a.jpg,D:/Source/b.jpg;
-            if (sourcePath != null || sourcePath != "") {
-                imagesToPdf(destination, name, sourcePath);
-            }
+            imagesToPdf(destination, name, sourcePath);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
