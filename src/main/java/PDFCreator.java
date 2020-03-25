@@ -10,7 +10,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -19,11 +21,9 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 public class PDFCreator {
@@ -277,7 +277,7 @@ public class PDFCreator {
     }
 
     public static void main(String[] args) throws Exception {
-        JsonObject config = jsonFromString("./src/main/resources/config.json");
+        JsonObject config = jsonFromString("config.json");
         PDFCreator.display(config);
     }
 }
