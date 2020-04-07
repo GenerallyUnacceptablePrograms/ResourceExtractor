@@ -145,7 +145,7 @@ public class PDFCreator {
         try {
             Scanner sc = new Scanner(System.in);
             // Destination = D:/Destination/;
-            String destination = "./";
+            String destination = "./extracted_files";
             String name = outputName;
             String sourcePath = "";
             for (String imageFile : pngFiles) {
@@ -160,7 +160,7 @@ public class PDFCreator {
         sout("PDF created with name " + outputName + ".pdf");
         sout("deleting images that were extracted");
         for (String pngFile : pngFiles) {
-            //deleteFile(pngFile);
+            deleteFile(pngFile);
         }
         sout("All done!");
     }
@@ -313,7 +313,7 @@ public class PDFCreator {
     }
 
     public static void main(String[] args) throws Exception {
-        JsonObject config = jsonFromString("src/main/resources/config.json");
+        JsonObject config = jsonFromString("config.json");
         PDFCreator.display(config);
     }
 }

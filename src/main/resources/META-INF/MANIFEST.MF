@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Main-Class: PDFCreator
+Class-Path: libs/bcprov-jdk15on-1.64.jar libs/js-1.5R4.1.jar libs/bcpkix
+ -jdk15on-1.64.jar libs/batik-transcoder-1.6-1.jar libs/svg-7.1.10.jar l
+ ibs/kernel-7.1.10.jar libs/pdfa-7.1.10.jar libs/javax.json-api-1.1.4.ja
+ r libs/xercesImpl-2.5.0.jar libs/commons-logging-1.1.1.jar libs/batik-e
+ xt-1.6-1.jar libs/barcodes-7.1.10.jar libs/styled-xml-parser-7.1.10.jar
+  libs/font-asian-7.1.10.jar libs/batik-script-1.6-1.jar libs/javax.json
+ -1.1.4.jar libs/hyph-7.1.10.jar libs/sign-7.1.10.jar libs/xmlgraphics-c
+ ommons-1.4.jar libs/io-7.1.10.jar libs/batik-svg-dom-1.6-1.jar libs/cri
+ mson-1.1.3.jar libs/xmlParserAPIs-2.0.2.jar libs/layout-7.1.10.jar libs
+ /batik-css-1.6-1.jar libs/log4j-1.2.15.jar libs/commons-io-1.3.1.jar li
+ bs/itext-2.1.7.jar libs/jsoup-1.13.1.jar libs/forms-7.1.10.jar libs/bat
+ ik-bridge-1.6-1.jar libs/slf4j-api-1.7.13.jar libs/batik-xml-1.6-1.jar 
+ libs/batik-dom-1.6-1.jar libs/batik-parser-1.6-1.jar libs/ghost4j-1.0.0
+ .jar libs/commons-beanutils-1.8.3.jar libs/batik-awt-util-1.6-1.jar lib
+ s/jna-3.3.0.jar libs/batik-gui-util-1.6-1.jar libs/batik-gvt-1.6-1.jar 
+ libs/batik-util-1.6-1.jar
+
