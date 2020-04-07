@@ -46,7 +46,7 @@ public class PDFCreator {
 
     public void sout(String output) {
         if (jTextArea != null) {
-            jTextArea.append(output+"\n");
+            jTextArea.append(output + "\n");
         } else {
             System.out.println(output);
         }
@@ -67,7 +67,7 @@ public class PDFCreator {
         jframe.setLayout(new BorderLayout());
 
         jTextArea = new JTextArea();
-        jTextArea.append("Debug log. Wait for all files to process. Pressing anything will close this window but not the processing.");
+        jTextArea.append("Debug log. Wait for all files to process. After getting \"ALL DONE \", press OK to close window.");
         JScrollPane scroll = new JScrollPane(jTextArea); //place the JTextArea in a scroll pane
         jframe.add(scroll, BorderLayout.CENTER);
         Thread t = new Thread(() -> {
@@ -79,39 +79,67 @@ public class PDFCreator {
         //find URLs
         String url = jsonValueExtractor(inputURL, jsonValueToSearch);
         url = url.replace("\\/", "/");
-        String mode = url.contains(".png") ? "png" : "svg";
+        /*String mode = url.contains(".png") ? "png" : "svg";
         if (!mode.equals(preferedMode)) {
             if (!isUrlStatus404(url.replace("." + mode, "." + preferedMode))) {
                 url = url.replace("." + mode, "." + preferedMode);
                 mode = preferedMode;
 
             }
-        }
+        }*/
+        //always use svg mode for now, and check for existence of .png of .svg does not exist
+        String mode = "svg";
+
         //download images
-        String downloadUrl = url;
+        url = url.replace(".png", ".svg"); //Always start with .svg
         ArrayList<String> downloadedFiles = new ArrayList<>();
         int counter = 0;
+        String downloadUrl = replaceUrlWithcounterSequence(url, counter);
         //check prefered mode url
 
 
         sout("used mode: " + mode);
-        while (!isUrlStatus404(downloadUrl)) {
-            downloadedFiles.add(downloadFile(new URL(downloadUrl), "_" + outputName + counter + "." + mode));
+        boolean flagLastFile = false;
+        while (!flagLastFile) {
+            String urlToDownload = "";
+            if (!isUrlStatus404(downloadUrl)) {
+                urlToDownload = downloadUrl;
+            } else if (!isUrlStatus404(downloadUrl.replace(".svg", ".png"))) {
+                urlToDownload = downloadUrl.replace(".svg", ".png");
+            } else {
+                //no valid .png or .svg url found
+                //check if next url does work. If it does, then skip this one (for now).
+                String nextUrlToCheck = replaceUrlWithcounterSequence(url, counter + 1);
+                if (!isUrlStatus404(nextUrlToCheck) || !isUrlStatus404(nextUrlToCheck.replace(".svg", ".png"))) {
+                    //next file still okay, increase counter
+                    sout("!ERROR: page number " + counter + " was not able to load and has been skipped.");
+                    urlToDownload = ""; //safeguard
+                    flagLastFile = false;
+                } else {
+                    //no more files
+                    flagLastFile = true;
+                }
+            }
+
+            if (!urlToDownload.equals("")) {
+                downloadedFiles.add(downloadFile(new URL(urlToDownload), "_" + outputName + counter
+                        + "." + (urlToDownload.contains(".png") ? "png" : "svg")));
+            }
             counter++;
-            downloadUrl = url.substring(0, url.indexOf(URLsubstringToFind) + URLsubstringToFind.length())
-                    + counter + url.substring(url.indexOf(URLsubstringToFind) + URLsubstringToFind.length() + URLlengthSubstringToSequence);
+            downloadUrl = replaceUrlWithcounterSequence(url, counter);
             sout(downloadUrl);
         }
         ArrayList<String> pngFiles = new ArrayList<>();
-        if (mode.equals("svg")) {
             //convert all files first
             for (String fileName : downloadedFiles) {
-                pngFiles.add(createImage(fileName));
-                deleteFile(fileName);
+                if (fileName.contains(".svg")){
+                    //convert to .png
+                    pngFiles.add(createImage(fileName));
+                    deleteFile(fileName);
+                }else{
+                    pngFiles.add(fileName);
+                }
             }
-        } else {
-            pngFiles.addAll(downloadedFiles);
-        }
 
 
         try {
@@ -132,9 +160,14 @@ public class PDFCreator {
         sout("PDF created with name " + outputName + ".pdf");
         sout("deleting images that were extracted");
         for (String pngFile : pngFiles) {
-            deleteFile(pngFile);
+            //deleteFile(pngFile);
         }
         sout("All done!");
+    }
+
+    private String replaceUrlWithcounterSequence(String url, int counter) {
+        return url.substring(0, url.indexOf(URLsubstringToFind) + URLsubstringToFind.length())
+                + counter + url.substring(url.indexOf(URLsubstringToFind) + URLsubstringToFind.length() + URLlengthSubstringToSequence);
     }
 
     private void deleteFile(String fileName) {
@@ -157,11 +190,11 @@ public class PDFCreator {
 
     private boolean isUrlStatus404(String url) throws IOException {
         URL u = new URL(url);
-        sout("check 404 of url " + url);
         HttpURLConnection huc = (HttpURLConnection) u.openConnection();
         huc.setRequestMethod("GET");  //OR  huc.setRequestMethod ("HEAD");
         huc.connect();
         int code = huc.getResponseCode();
+        sout("is " + (code == 404 ? "404" : "valid") + "with url " + url);
         return code == 404;
     }
 
@@ -196,6 +229,9 @@ public class PDFCreator {
         TranscoderOutput output_png_image = new TranscoderOutput(png_ostream);
         // Step-3: Create PNGTranscoder and define hints if required
         PNGTranscoder my_converter = new PNGTranscoder();
+        my_converter.addTranscodingHint(PNGTranscoder.KEY_PIXEL_UNIT_TO_MILLIMETER, 1.0f);
+        my_converter.addTranscodingHint(PNGTranscoder.KEY_WIDTH, 2480f);
+        my_converter.addTranscodingHint(PNGTranscoder.KEY_HEIGHT,3508f);
         // Step-4: Convert and Write output
         my_converter.transcode(input_svg_image, output_png_image);
         png_ostream.flush();
@@ -277,7 +313,7 @@ public class PDFCreator {
     }
 
     public static void main(String[] args) throws Exception {
-        JsonObject config = jsonFromString("config.json");
+        JsonObject config = jsonFromString("src/main/resources/config.json");
         PDFCreator.display(config);
     }
 }
